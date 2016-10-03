@@ -1,11 +1,11 @@
 require "pry"
 class Question
-  attr_accessor :body, :title, :identifier, :data
+  attr_accessor :body, :pointer, :identifier, :data, :bot
   attr_reader :subquestions, :input
 
-  def initialize(body, title, identifier)
+  def initialize(body, identifier, pointer = nil)
     @body = body
-    @title = title
+    @pointer = pointer
     @identifier  = identifier
     @subquestions = []
     @data = {}
@@ -35,25 +35,45 @@ class Question
 
   def execute
     print_question
-    @input = gets.gsub("\n","")
+    @input = get_input
     update_data
     next_question
   end
 
   def print_question
-    key = @identifier.to_sym
-    @body.gsub!("#{@identifier}",@data[key]) if @data.key?(key)
+    # binding.pry
+    # binding.pry
+    @body.gsub!("#{@pointer}", @data[@pointer][1]) if @data.key?(@pointer) && @pointer
     puts @body
+  end
+
+  def get_input
+    gets.gsub("\n","")
   end
 
   def update_data
     #save_question
-    @data[@identifier.to_sym] = @input
+    @data[@identifier] = [@body, @input]
+    update_listener
   end
 
   def next_question
+    if final_question?
+      return puts "thank you, collected data #{@data}"
+    end
     @subquestions[0].data = @data
+    @subquestions[0].add_listener(@bot)
     @subquestions[0].execute
+  end
+
+  def add_listener(bot)
+    # binding.pry
+    @bot = bot
+  end
+
+  def update_listener
+    # binding.pry
+    @bot.update(@data)
   end
 
 end

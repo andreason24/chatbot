@@ -1,6 +1,6 @@
 class CompositeQuestion < Question
-  def initialize(body, title, identifier, answers = [])
-	super(body, title, identifier)
+  def initialize(body, identifier, pointer = nil, answers = [])
+	super(body, identifier, pointer)
 	@answers = answers
   end
 
@@ -10,13 +10,21 @@ class CompositeQuestion < Question
     @answers.each_with_index { |a,i| puts "#{i+1}.) #{a}"}
   end
 
+  def get_input
+    gets.gsub("\n","").to_i - 1
+  end
+
   def update_data
-    @data[@identifier.to_sym] = @answers[@input-1]
+    @data[@identifier] = [@body, @answers[@input]]
+    update_listener
   end
 
   def next_question
-    @subquestions[@input-1].data = @data
-    @subquestions[@input-1].execute
+    return puts "thank you, collected data #{@data}" if final_question?
+    @input = 0 if @subquestions.size == 1
+    @subquestions[@input].data = @data
+    @subquestions[@input].add_listener(@bot)
+    @subquestions[@input].execute
   end
 
 end
