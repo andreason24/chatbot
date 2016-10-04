@@ -1,5 +1,5 @@
 class CompositeQuestion < Question
-  def initialize(body, identifier, pointer = nil, answers = [])
+  def initialize(body, identifier, answers, pointer = nil)
 	super(body, identifier, pointer)
 	@answers = answers
   end

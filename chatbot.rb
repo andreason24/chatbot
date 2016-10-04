@@ -1,53 +1,25 @@
-
 require_relative "question"
 require "pry"
 require_relative "composite_question"
 require_relative "migration"
-
-start = Question.new("Hello, what is your name?", "name")
-
-second = Question.new("name, how old are you?", "age", "name")
-start.add_question second
-
-third = CompositeQuestion.new("okey name, what is the best way to contact with you?", "info", "name", ["by email","by phone", "by skype"])
-
-second.add_question third
-
-third_first = Question.new("please, tell your email","email")
-third_second = Question.new("please, tell your phone","phone")
-third_third = Question.new("please, tell your skype", "skype")
-
-third << third_first
-third << third_second
-third << third_third
-
-four = CompositeQuestion.new("we will contact with you by email", "end", nil, ["ok","thanks", "good luck"] )
-
-third_first << four
-
-five = Question.new("just some end question", "end")
-
-four << five
+require_relative "user"
+require_relative "message"
 
 class Chatbot
 
+	attr_accessor :data, :start_question
+
 	def initialize
-		@start_question
-		@data
+		@data = {}
 	end
 
-	def add_question(question)
-		@start_question = question
-	end
-
-	def execute
-		# binding.pry
-		user = User.create!(name: 'Big Bang')
+	def ask_question
 		@start_question.add_listener(self)
 		@start_question.execute
+		user = User.create!(name: @data["USERNAME"][1])
 		store_data(user, @data)
 		messages = user.messages.pluck(:body)
-		puts "#{user.name} has #{user.messages} messages #{messages.join(', ')}."
+		puts "#{user.name} has #{user.messages.count} messages: #{messages.join(', ')}."
 	end
 
 	def update(data)
@@ -63,6 +35,38 @@ class Chatbot
 
 end
 
+name = Question.new("Please enter your name", "USERNAME")
+
+contacts = CompositeQuestion.new("Hello USERNAME, How can we reach you out to you?", "contacts", 
+								["phone", "Email", "I don't want to be contacted"], "USERNAME")
+name << contacts
+phone = Question.new("Please type your phone number", "contact_choise")
+email = Question.new("Please type your email address", "contact_choise")
+contact_failed = Question.new("Said to hear that. Whenever you change your mind - feel free to send me a message",
+							  "failed")
+
+contacts << phone
+contacts << email
+contacts << contact_failed
+
+contact_time = CompositeQuestion.new("What is the best time we can reach out to you?", "contact_time",
+									["ASAP", "Morning", "Aftermoon", "Evening"])
+phone << contact_time
+
+contact_by_phone = CompositeQuestion.new("we are going to contact you using contact_choise", "contact", 
+								["Yes, please", "Sorry, wrong phone"], "contact_choise")
+contact_by_email = CompositeQuestion.new("we are going to contact you using contact_choise", "contact", 
+								["Yes, please", "Sorry, wrong email"], "contact_choise")
+
+contact_time << contact_by_phone
+email << contact_by_email
+
+end_message = Question.new("Happy end. You can add anything you want", "end")
+contact_by_email << end_message
+contact_by_phone << end_message
+contact_by_email << email
+contact_by_phone << phone
+
 bot = Chatbot.new
-bot.add_question(start)
-bot.execute
+bot.start_question = name
+bot.ask_question

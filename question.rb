@@ -21,14 +21,6 @@ class Question
     @subquestions.delete question
   end
 
-  def [](index)
-    @subquestions[index]
-  end
-
-  def []=(index, question)
-    @subquestions[index] = question
-  end
-
   def final_question?
     subquestions.empty?
   end
@@ -41,8 +33,6 @@ class Question
   end
 
   def print_question
-    # binding.pry
-    # binding.pry
     @body.gsub!("#{@pointer}", @data[@pointer][1]) if @data.key?(@pointer) && @pointer
     puts @body
   end
@@ -52,7 +42,6 @@ class Question
   end
 
   def update_data
-    #save_question
     @data[@identifier] = [@body, @input]
     update_listener
   end
@@ -67,12 +56,10 @@ class Question
   end
 
   def add_listener(bot)
-    # binding.pry
     @bot = bot
   end
 
   def update_listener
-    # binding.pry
     @bot.update(@data)
   end
 
