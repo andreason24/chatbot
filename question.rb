@@ -17,10 +17,6 @@ class Question
 
   alias << add_question
 
-  def remove_question(question)
-    @subquestions.delete question
-  end
-
   def final_question?
     subquestions.empty?
   end
@@ -43,12 +39,12 @@ class Question
 
   def update_data
     @data[@identifier] = [@body, @input]
-    update_listener
   end
 
   def next_question
     if final_question?
-      return puts "thank you, collected data #{@data}"
+      update_listener
+      return puts "thank you"
     end
     @subquestions[0].data = @data
     @subquestions[0].add_listener(@bot)
