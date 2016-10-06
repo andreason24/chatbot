@@ -1,9 +1,8 @@
 require 'rspec'
 require_relative '../basic_question'
-require_relative '../question'
 
-RSpec.describe Question do
-	let(:question) { Question.new("Please enter your name", "USERNAME") }
+RSpec.describe BasicQuestion do
+	let(:question) { BasicQuestion.new("Please enter your name", "USERNAME") }
 
 	context "question initialization" do 
 		it "should initialize body" do 
@@ -24,17 +23,6 @@ RSpec.describe Question do
 			expect do
 				question.print_question
 			end.to output("Please enter your name\n").to_stdout
-		end
-
-		it "should update data" do
-			expect(question.update_data).to eq ["Please enter your name", nil]
-		end
-	end
-
-	context "#add_question" do 
-		it "should have subquestion" do 
-			question.add_question(question)
-			expect(question.subquestion).not_to be_nil
 		end
 	end
 end
