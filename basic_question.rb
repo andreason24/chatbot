@@ -3,25 +3,24 @@
 #pointer - указує на ключове слово(використовується в тих випадках коли потрібно замінити слово 
 #з тексту(body) на одну з попередніх відповідей користувача) 
 class BasicQuestion
-  attr_accessor :body, :identifier, :pointer, :data, :bot
+  attr_accessor :body, :identifier, :pointer, :bot
   attr_reader :user_input
 
   def initialize(body, identifier, pointer = nil)
     @body = body
     @pointer = pointer
     @identifier  = identifier
-    @data = {}
   end
 
   def ask
     print_question
     get_input
-    update_data
+    update_listener
     next_question
   end
 
   def print_question
-    @body.gsub!("#{@pointer}", @data[@pointer][1]) if @data.key?(@pointer) && @pointer
+    @body.gsub!("#{@pointer}", @bot.data[@pointer][1]) if @bot.data.key?(@pointer) && @pointer
     puts @body
   end
 
@@ -33,12 +32,8 @@ class BasicQuestion
     @bot = bot
   end
 
-  def update_data
-    raise NotImplementedError
-  end
-
   def update_listener
-    @bot.update(@data)
+    raise NotImplementedError
   end
 
   def next_question

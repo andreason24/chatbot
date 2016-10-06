@@ -11,8 +11,8 @@ class Question < BasicQuestion
 
   alias << add_question
 
-  def update_data
-    @data[@identifier] = [@body, @user_input]
+  def update_listener
+    @bot.update(@identifier, @body, @user_input)
   end
 
   def next_question
@@ -20,7 +20,6 @@ class Question < BasicQuestion
       update_listener
       return puts "thank you"
     end
-    @subquestion.data = @data
     @subquestion.add_listener(@bot)
     @subquestion.ask
   end

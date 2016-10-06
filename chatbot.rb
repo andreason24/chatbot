@@ -1,42 +1,5 @@
-require_relative "basic_question"
-require_relative "question"
-require_relative "composite_question"
-require_relative "migration"
-require_relative "user"
-require_relative "message"
+require_relative "bot"
 
-class Chatbot
-	attr_accessor :data, :start_question
-
-	def initialize
-		@data = {}
-	end
-
-	def start_conversation
-		@start_question.add_listener(self)
-		@start_question.ask
-		user = User.create!(name: @data["USERNAME"][1])
-		store_data(user, @data)
-	end
-
-	def update(data)
-		@data = data
-	end
-
-	def store_data(user, data)
-		User.transaction do 
-			@data.each_pair { |k,v|
-				user.messages.create!([{ body: v[0] }, { body: v[1] }])
-			}
-		end
-	end
-
-	def show_collected_data
-		user = User.last
-		messages = user.messages.pluck(:body)
-		puts "#{user.name} has #{user.messages.count} messages: #{messages.join(', ')}."
-	end
-end
 
 start_question = Question.new("Please enter your name", "USERNAME")
 contacts = CompositeQuestion.new("Hello USERNAME, How can we reach you out to you?", "contacts", ["phone", "Email", "I don't want to be contacted"], "USERNAME")
@@ -60,7 +23,7 @@ start_question << contacts
 											  contact_by_phone << end_message
 										      contact_by_phone << phone
 
-bot = Chatbot.new
+bot = Bot.new
 bot.start_question = start_question
 bot.start_conversation
 bot.show_collected_data

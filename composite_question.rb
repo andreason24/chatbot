@@ -36,8 +36,8 @@ class CompositeQuestion < BasicQuestion
     end
   end
 
-  def update_data
-    @data[@identifier] = [@body, @answers[@user_input]]
+  def update_listener
+    @bot.update(@identifier, @body, @answers[@user_input])
   end
 
   def final_question?
@@ -50,7 +50,6 @@ class CompositeQuestion < BasicQuestion
       return puts "thank you"
     end
     @user_input = 0 if @subquestions.size == 1
-    @subquestions[@user_input].data = @data
     @subquestions[@user_input].add_listener(@bot)
     @subquestions[@user_input].ask
   end
