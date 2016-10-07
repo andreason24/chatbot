@@ -16,14 +16,14 @@ class Bot
 		@start_question.add_listener(self)
 		@start_question.ask
 		user = User.create!(name: @data["USERNAME"][1])
-		store_data(user, @data)
+		store_data(user)
 	end
 
 	def update(identifier, body, user_input)
 		@data[identifier] = [body, user_input]
 	end
 
-	def store_data(user, data)
+	def store_data(user)
 		User.transaction do 
 			@data.each_pair { |k,v|
 				user.messages.create!([{ body: v[0] }, { body: v[1] }])
